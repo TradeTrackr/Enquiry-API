@@ -14,6 +14,7 @@ class Enquiry(db.Model):
     phone_number = db.Column(db.Integer)
     additional_information = db.Column(db.String)
     photos = db.Column(JSONB, nullable=True)
+    postcode = db.Column(db.String)
 
     def save(self):  # pragma: no cover
         db.session.add(self)
@@ -27,5 +28,6 @@ class Enquiry(db.Model):
             "timestamp" : self.timestamp,
             "phone_number" : self.phone_number,
             "additional_information" : self.additional_information,
-            "photos" : self.photos
+            "photos" : self.photos,
+            "postcode" : self.postcode
         }

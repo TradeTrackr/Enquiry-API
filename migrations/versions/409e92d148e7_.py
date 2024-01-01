@@ -27,6 +27,7 @@ def upgrade():
     sa.Column('phone_number', sa.Integer(), nullable=True),
     sa.Column('additional_information', sa.String(), nullable=True),
     sa.Column('photos', postgresql.JSONB(astext_type=sa.Text()), nullable=True),
+    sa.Column('postcode', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
