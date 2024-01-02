@@ -7,11 +7,11 @@ from sqlalchemy.dialects.postgresql import JSONB
 class Enquiry(db.Model):
     __tablename__ = 'enquiry'
     id = db.Column(db.Integer, primary_key=True)
-    company_id = db.Column(db.Integer)
+    company_id = db.Column(db.String)
     email = db.Column(db.String)
     full_name = db.Column(db.String)
     timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=True)
-    phone_number = db.Column(db.Integer)
+    phone_number = db.Column(db.String)
     additional_information = db.Column(db.String)
     photos = db.Column(JSONB, nullable=True)
     postcode = db.Column(db.String)

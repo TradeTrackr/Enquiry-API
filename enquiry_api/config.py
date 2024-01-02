@@ -19,6 +19,12 @@ SQLALCHEMY_DB = os.environ['SQLALCHEMY_DB']
 postgresql_string = 'postgresql://{}:{}@{}:{}/{}'
 SQLALCHEMY_DATABASE_URI = postgresql_string.format(SQLALCHEMY_USER, SQLALCHEMY_PASSWORD, SQLALCHEMY_HOST, SQLALCHEMY_PORT, SQLALCHEMY_DB)
 
+BUCKET_ID = os.environ['BUCKET_ID']
+BUCKET_NAME = os.environ['BUCKET_NAME']
+aws_access_key_id = os.environ['ACCESS_KEY']
+aws_secret_access_key = os.environ['aws_SECRET_KEY']
+
+
 SET_POOL = os.environ['SET_POOL']
 
 FLASK_LOG_LEVEL = os.environ['FLASK_LOG_LEVEL']
