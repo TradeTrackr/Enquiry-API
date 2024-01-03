@@ -59,11 +59,14 @@ def generate_presigned_url():
         presigned_urls = []
 
         for file_info in files_info:
-
+            key_val ='{}/homefrontmaintenance/{}/{}'.format(config.BUCKET_NAME,
+                                                            json_data.get('fullname').replace(' ','').lower(),
+                                                            file_info
+                                                            )
             # Generate a presigned URL for each file
             presigned_url = s3_client.generate_presigned_url('put_object',
                                                             Params={'Bucket': bucket_name,
-                                                                    'Key':  '/homefrontmaintenance'+ '/' +config.BUCKET_NAME+ '/' + json_data.get('fullname').replace(' ','') + '/' + file_info},
+                                                                    'Key': key_val},
                                                             ExpiresIn=expiration)
             presigned_urls.append({'file_name': file_info, 'presigned_url': presigned_url})
 
