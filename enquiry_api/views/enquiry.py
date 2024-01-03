@@ -14,7 +14,7 @@ s3_client = boto3.client('s3',
 
 enquiry = Blueprint('enquiry', __name__)
 
-
+#TODO this should have some kind of authentication
 @enquiry.route("/get_enquirys/<id>", methods=['GET'])
 def get_enquirys(id):
 
@@ -39,6 +39,7 @@ def new_enquiry():
         return build_output(results)
 
     else:
+        #TODO error is returned with a 200 status code
         return jsonify({'error': '403', 'error_message': 'company_id is not valid'})
 
 @enquiry.route('/generate_presigned_url', methods=['POST'])
@@ -73,6 +74,7 @@ def generate_presigned_url():
         return jsonify({'presigned_urls': presigned_urls})
 
     else:
+        #TODO error is returned with a 200 status code
         return jsonify({'error': '403', 'error_message': 'company_id is not valid'})
 
 
