@@ -28,6 +28,7 @@ def new_enquiry():
     json_data = request.json
     #replace this..
     # do a check that company id is in account_api
+    # future route /trader/check_trader_bool/{id}
 
     if json_data.get('company_id') == '0f40cbf6-3502-4836-b548-37e864eec836':
 
