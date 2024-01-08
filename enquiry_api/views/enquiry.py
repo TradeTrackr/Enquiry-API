@@ -17,8 +17,8 @@ enquiry = Blueprint('enquiry', __name__)
 #TODO this should have some kind of authentication
 @enquiry.route("/get_enquirys/<id>", methods=['GET'])
 def get_enquirys(id):
-
-    results = Sql.get_all_enquirys({"company_id": id})
+    print(id)
+    results = Sql.get_enquirys({"company_id": id})
 
     return build_output(results)
 
