@@ -23,8 +23,6 @@ def get_enquirys(company_id):
 
 @enquiry.route("/get_enquiry/<id>/<company_id>", methods=['GET'])
 def get_enquiry(id, company_id):
-    print(id)
-    print(company_id)
     results = Sql.get_enquirys({"id": int(id), "company_id": company_id})
 
     return build_output(results)
