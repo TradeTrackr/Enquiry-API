@@ -25,6 +25,7 @@ class Enquiry(db.Model):
             "id" : self.id,
             "email" : self.email,
             "full_name" : self.full_name,
+            "company_id" : self.company_id,
             "timestamp" : self.timestamp,
             "phone_number" : self.phone_number,
             "additional_information" : self.additional_information,

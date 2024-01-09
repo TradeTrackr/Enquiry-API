@@ -15,10 +15,17 @@ s3_client = boto3.client('s3',
 enquiry = Blueprint('enquiry', __name__)
 
 #TODO this should have some kind of authentication
-@enquiry.route("/get_enquirys/<id>", methods=['GET'])
-def get_enquirys(id):
+@enquiry.route("/get_enquirys/<company_id>", methods=['GET'])
+def get_enquirys(company_id):
+    results = Sql.get_enquirys({"company_id": company_id})
+
+    return build_output(results)
+
+@enquiry.route("/get_enquiry/<id>/<company_id>", methods=['GET'])
+def get_enquiry(id, company_id):
     print(id)
-    results = Sql.get_enquirys({"company_id": id})
+    print(company_id)
+    results = Sql.get_enquirys({"id": int(id), "company_id": company_id})
 
     return build_output(results)
 
@@ -46,7 +53,6 @@ def new_enquiry():
 @enquiry.route('/generate_presigned_url', methods=['POST'])
 def generate_presigned_url():
     json_data = request.json
-    print(request.json)
     #replace this..
     # do a check that company id is in account_api
     if json_data.get('company_id') == '0f40cbf6-3502-4836-b548-37e864eec836':
@@ -61,8 +67,9 @@ def generate_presigned_url():
         presigned_urls = []
 
         for file_info in files_info:
-            key_val ='{}/homefrontmaintenance/{}/{}'.format(config.BUCKET_NAME,
+            key_val ='{}/homefrontmaintenance/{}/{}/{}'.format(config.BUCKET_NAME,
                                                             json_data.get('fullname').replace(' ','').lower(),
+                                                            json_data.get('enquiry_id'),
                                                             file_info
                                                             )
             # Generate a presigned URL for each file
