@@ -15,6 +15,13 @@ class Enquiry(db.Model):
     additional_information = db.Column(db.String)
     photos = db.Column(JSONB, nullable=True)
     postcode = db.Column(db.String)
+    address_number_or_name = db.Column(db.String)
+    address_line1 = db.Column(db.String)
+    address_line2 = db.Column(db.String)
+    address_line3 = db.Column(db.String)
+    category = db.Column(db.String)
+    category_detail = db.Column(db.String)
+    status = db.Column(db.String)
 
     def save(self):  # pragma: no cover
         db.session.add(self)
@@ -30,5 +37,12 @@ class Enquiry(db.Model):
             "phone_number" : self.phone_number,
             "additional_information" : self.additional_information,
             "photos" : self.photos,
-            "postcode" : self.postcode
+            "postcode" : self.postcode,
+            "address_number_or_name" : self.address_number_or_name,
+            "address_line1" : self.address_line1,
+            "address_line2" : self.address_line2,
+            "address_line3" : self.address_line3,
+            "category" : self.category,
+            "category_detail" : self.category_detail,
+            "status" : self.status
         }
