@@ -53,7 +53,7 @@ class EnquiryActivity(db.Model):
     __tablename__ = 'enquiryactivity'
 
     id = Column(Integer, primary_key=True)
-    enuiry_id = Column(Integer, ForeignKey('enquiry.id'))
+    enquiry_id = Column(Integer, ForeignKey('enquiry.id'))
     status = Column(String)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow(), nullable=True)
 
@@ -64,7 +64,7 @@ class EnquiryActivity(db.Model):
     def to_dict(self):
         return {
             "id" : self.id,
-            "enuiry_id" : self.enuiry_id,
+            "enquiry_id" : self.enquiry_id,
             "status" : self.status,
             "timestamp" : self.timestamp
         }

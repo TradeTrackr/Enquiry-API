@@ -24,15 +24,17 @@ def get_enquirys(company_id):
 
 @enquiry.route("/get_enquiry/<id>/<company_id>", methods=['GET'])
 def get_enquiry(id, company_id):
-    results = Sql.get_enquirys({"id": int(id), "company_id": company_id})
-    result_dict = []
-    for key in results:
-        output = key.to_dict()
-        if output.get('photos',{}) is not {}:
+
+    results = Sql.get_enquiry_and_activity({"id": int(id), "company_id": str(company_id)})
+
+    enquiries_list = []
+    for enquiry, activity in results:
+        enquiries_dict = enquiry.to_dict()
+        if enquiries_dict.get('photos',{}) is not {}:
             photos_url={}
-            for key in output['photos']:
+            for key in enquiries_dict['photos']:
                 key_val ='{}/homefrontmaintenance/{}/{}/{}'.format(config.BUCKET_NAME,
-                                                                output.get('full_name').replace(' ','').lower(),
+                                                                enquiries_dict.get('full_name').replace(' ','').lower(),
                                                                 id,
                                                                 key
                                                                 )
@@ -43,11 +45,25 @@ def get_enquiry(id, company_id):
                                                                     'Key':key_val
                                                                 }, ExpiresIn = 3600)
                 photos_url.update({key: url})
-            output['photos'] = photos_url
+            enquiries_dict['photos'] = photos_url
 
-        result_dict.append(output)
-    
-    return jsonify(result_dict)
+        enquiries_dict['activities'] = []
+
+        if activity:
+            enquiries_dict['activities'].append(activity.to_dict())
+
+        enquiries_list.append(enquiries_dict)
+
+    return jsonify(enquiries_list)
+
+
+@enquiry.route("/new_enquiry_activity", methods=['POST'])
+def new_enquiry_activity():
+    json_data = request.json
+
+    result = Sql.new_enquiry_activity(json_data)
+
+    return build_output(result)
 
 
 @enquiry.route("/new_enquiry", methods=['POST'])
@@ -61,7 +77,15 @@ def new_enquiry():
     if json_data.get('company_id') == '0f40cbf6-3502-4836-b548-37e864eec836':
 
         results = Sql.new_enquiry(json_data)
-        return build_output(results)
+        result = build_output(results)
+        
+        enquiry = {
+            "enuiry_id": result[0]['id'],
+            "status": "Enquiry Created"
+        }
+        Sql.new_enquiry_activity(enquiry)
+
+        return result
 
     else:
         #TODO error is returned with a 200 status code
@@ -70,6 +94,7 @@ def new_enquiry():
 @enquiry.route('/generate_presigned_url', methods=['POST'])
 def generate_presigned_url():
     json_data = request.json
+    print(json_data)
     #replace this..
     # do a check that company id is in account_api
     if json_data.get('company_id') == '0f40cbf6-3502-4836-b548-37e864eec836':
