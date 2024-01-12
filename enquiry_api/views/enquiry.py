@@ -36,6 +36,7 @@ def get_enquiry(id, company_id):
                                                                 id,
                                                                 key
                                                                 )
+
                 url = s3_client.generate_presigned_url('get_object',
                                                         Params = {
                                                                     'Bucket': config.BUCKET_ID,
@@ -54,9 +55,10 @@ def new_enquiry():
     json_data = request.json
     #replace this..
     # do a check that company id is in account_api
-    check_company_bool = AccountApi().get_company(json_data.get('company_id'))
+    # check_company_bool = AccountApi().get_company(json_data.get('company_id'))
+    # if check_company_bool == True:
 
-    if check_company_bool == True:
+    if json_data.get('company_id') == '0f40cbf6-3502-4836-b548-37e864eec836':
 
         results = Sql.new_enquiry(json_data)
         return build_output(results)
