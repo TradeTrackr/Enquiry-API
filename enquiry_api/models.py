@@ -2,26 +2,28 @@ from enquiry_api import db
 from datetime import datetime
 import datetime
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
 
 
 class Enquiry(db.Model):
     __tablename__ = 'enquiry'
-    id = db.Column(db.Integer, primary_key=True)
-    company_id = db.Column(db.String)
-    email = db.Column(db.String)
-    full_name = db.Column(db.String)
-    timestamp = db.Column(db.DateTime, default=datetime.datetime.utcnow(), nullable=True)
-    phone_number = db.Column(db.String)
-    additional_information = db.Column(db.String)
-    photos = db.Column(JSONB, nullable=True)
-    postcode = db.Column(db.String)
-    address_number_or_name = db.Column(db.String)
-    address_line1 = db.Column(db.String)
-    address_line2 = db.Column(db.String)
-    address_line3 = db.Column(db.String)
-    category = db.Column(db.String)
-    category_detail = db.Column(db.String)
-    status = db.Column(db.String)
+
+    id = Column(Integer, primary_key=True)
+    company_id = Column(String)
+    email = Column(String)
+    full_name = Column(String)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow(), nullable=True)
+    phone_number = Column(String)
+    additional_information = Column(String)
+    photos = Column(JSONB, nullable=True)
+    postcode = Column(String)
+    address_number_or_name = Column(String)
+    address_line1 = Column(String)
+    address_line2 = Column(String)
+    address_line3 = Column(String)
+    category = Column(String)
+    category_detail = Column(String)
+    status = Column(String)
 
     def save(self):  # pragma: no cover
         db.session.add(self)
@@ -45,4 +47,24 @@ class Enquiry(db.Model):
             "category" : self.category,
             "category_detail" : self.category_detail,
             "status" : self.status
+        }
+
+class EnquiryActivity(db.Model):
+    __tablename__ = 'enquiryactivity'
+
+    id = Column(Integer, primary_key=True)
+    enuiry_id = Column(Integer, ForeignKey('enquiry.id'))
+    status = Column(String)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow(), nullable=True)
+
+    def save(self):  # pragma: no cover
+        db.session.add(self)
+        db.session.commit()
+
+    def to_dict(self):
+        return {
+            "id" : self.id,
+            "enuiry_id" : self.enuiry_id,
+            "status" : self.status,
+            "timestamp" : self.timestamp
         }

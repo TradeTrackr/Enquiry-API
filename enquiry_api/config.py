@@ -8,6 +8,7 @@ def convert_to_bool(value):
 
 APP_NAME = os.environ['APP_NAME']
 APM_ENABLED = convert_to_bool(os.environ['APM_ENABLED'])
+ACCOUNT_API_ENDPOINT = os.environ['ACCOUNT_API_ENDPOINT']
 
 SQLALCHEMY_MIGRATE_REPO = os.environ['SQLALCHEMY_MIGRATE_REPO']
 
