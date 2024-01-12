@@ -1,5 +1,6 @@
 from enquiry_api import db
 from enquiry_api.models import Enquiry, EnquiryActivity
+from sqlalchemy import desc
 
 class Sql(object):
     # create a Session
@@ -21,6 +22,25 @@ class Sql(object):
             variable = variable.filter(Enquiry.company_id == params['company_id'])
 
         return variable.all()
+
+    def get_enquirys_most_recent_activity(params):
+        variable = Sql.session.query(Enquiry).filter(Enquiry.email == params['email'], Enquiry.company_id == params['company_id'])
+        enquiries_list = []
+
+        enquiries = variable.all()
+        for enquiry in enquiries:
+            # Fetch the most recent activity for the current enquiry
+            most_recent_activity = Sql.session.query(EnquiryActivity)\
+                                        .filter(EnquiryActivity.enquiry_id == enquiry.id)\
+                                        .order_by(desc(EnquiryActivity.timestamp))\
+                                        .first()
+
+            enquiry_dict = enquiry.to_dict()
+            enquiry_dict['most_recent_activity'] = most_recent_activity.to_dict() if most_recent_activity else None
+            enquiries_list.append(enquiry_dict)
+
+        return enquiries_list
+
 
 #start of insert sql Statements
     def new_enquiry(params):

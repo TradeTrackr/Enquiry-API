@@ -22,6 +22,17 @@ def get_enquirys(company_id):
 
     return build_output(results)
 
+
+@enquiry.route("/get_enquiry_to_check", methods=['GET'])
+def get_enquiry_to_check():
+
+    json_data = request.json
+
+    results = Sql.get_enquirys(json_data)
+
+    return build_output(results)
+
+
 @enquiry.route("/get_enquiry/<id>/<company_id>", methods=['GET'])
 def get_enquiry(id, company_id):
 
@@ -55,6 +66,16 @@ def get_enquiry(id, company_id):
         enquiries_list.append(enquiries_dict)
 
     return jsonify(enquiries_list)
+
+
+@enquiry.route("/get_user_enquiries/<company_id>", methods=['GET'])
+def get_user_enquiries(company_id):
+    json_data = request.json
+
+    results = Sql.get_enquirys_most_recent_activity({"email": json_data['email'], "company_id": str(company_id)})
+
+    return jsonify(results)
+
 
 
 @enquiry.route("/new_enquiry_activity", methods=['POST'])
