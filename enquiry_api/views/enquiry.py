@@ -5,6 +5,8 @@ from enquiry_api.sql import Sql
 from datetime import datetime
 from botocore.client import Config
 from enquiry_api.dependencies.account_api import AccountApi
+from enquiry_api.utilities.authentication import token_required
+
 
 s3_client = boto3.client('s3',
     aws_access_key_id= config.aws_access_key_id,
@@ -12,11 +14,10 @@ s3_client = boto3.client('s3',
     config=Config(signature_version='s3v4'),
     region_name='eu-west-2')
 
-
 enquiry = Blueprint('enquiry', __name__)
 
-#TODO this should have some kind of authentication
 @enquiry.route("/get_enquirys/<company_id>", methods=['GET'])
+@token_required
 def get_enquirys(company_id):
     results = Sql.get_enquirys({"company_id": company_id})
 
@@ -24,6 +25,7 @@ def get_enquirys(company_id):
 
 
 @enquiry.route("/get_enquiry_to_check", methods=['GET'])
+@token_required
 def get_enquiry_to_check():
 
     json_data = request.json
@@ -34,6 +36,7 @@ def get_enquiry_to_check():
 
 
 @enquiry.route("/get_enquiry/<id>/<company_id>", methods=['GET'])
+@token_required
 def get_enquiry(id, company_id):
 
     results = Sql.get_enquiry_and_activity({"id": int(id), "company_id": str(company_id)})
@@ -69,6 +72,7 @@ def get_enquiry(id, company_id):
 
 
 @enquiry.route("/get_user_enquiries/<company_id>", methods=['GET'])
+@token_required
 def get_user_enquiries(company_id):
     json_data = request.json
 
@@ -77,8 +81,8 @@ def get_user_enquiries(company_id):
     return jsonify(results)
 
 
-
 @enquiry.route("/new_enquiry_activity", methods=['POST'])
+@token_required
 def new_enquiry_activity():
     json_data = request.json
 
@@ -92,10 +96,8 @@ def new_enquiry():
     json_data = request.json
     #replace this..
     # do a check that company id is in account_api
-    # check_company_bool = AccountApi().get_company(json_data.get('company_id'))
-    # if check_company_bool == True:
-
-    if json_data.get('company_id') == '0f40cbf6-3502-4836-b548-37e864eec836':
+    check_company_bool = AccountApi().get_company(json_data.get('company_id'))
+    if check_company_bool == True:
 
         results = Sql.new_enquiry(json_data)
         result = build_output(results)
@@ -118,7 +120,8 @@ def generate_presigned_url():
     print(json_data)
     #replace this..
     # do a check that company id is in account_api
-    if json_data.get('company_id') == '0f40cbf6-3502-4836-b548-37e864eec836':
+    check_company_bool = AccountApi().get_company(json_data.get('company_id'))
+    if check_company_bool == True:
     
         # replace with company name based on company id..
         bucket_name = config.BUCKET_ID

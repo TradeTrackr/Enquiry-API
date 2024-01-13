@@ -17,3 +17,18 @@ class AccountApi(object):
         )
 
         return json.loads(resp.text)
+
+    def check_token(self, params):
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+
+        resp = requests.get(
+            config.ACCOUNT_API_ENDPOINT + f"/auth/check_token",
+            headers=headers,
+            data=json.dumps(params)
+
+        )
+
+        return json.loads(resp.text)
