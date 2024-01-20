@@ -6,6 +6,8 @@ from datetime import datetime
 from botocore.client import Config
 from enquiry_api.dependencies.account_api import AccountApi
 from enquiry_api.utilities.authentication import token_required
+from enquiry_api.dependencies.sqs import EmailSqsSender
+from itsdangerous import URLSafeTimedSerializer
 
 
 s3_client = boto3.client('s3',
@@ -20,6 +22,14 @@ enquiry = Blueprint('enquiry', __name__)
 @token_required
 def get_enquirys(company_id):
     results = Sql.get_enquirys({"company_id": company_id})
+
+    return build_output(results)
+
+
+@enquiry.route("/get_new_enquirys/<company_id>", methods=['GET'])
+@token_required
+def get_new_enquirys(company_id):
+    results = Sql.get_new_enquirys({"company_id": company_id})
 
     return build_output(results)
 
@@ -80,6 +90,15 @@ def get_user_enquiries(company_id):
 
     return jsonify(results)
 
+@enquiry.route("/enquiry/<id>", methods=['PUT'])
+@token_required
+def update_enquiry(id):
+    json_data = request.json
+
+    result = Sql.update_enquiry(id, json_data)
+
+    return build_output(result)
+
 
 @enquiry.route("/new_enquiry_activity", methods=['POST'])
 @token_required
@@ -96,8 +115,8 @@ def new_enquiry():
     json_data = request.json
     #replace this..
     # do a check that company id is in account_api
-    check_company_bool = AccountApi().get_company(json_data.get('company_id'))
-    if check_company_bool == True:
+    get_company_details = AccountApi().get_company(json_data.get('company_id'))
+    if get_company_details != False:
 
         results = Sql.new_enquiry(json_data)
         result = build_output(results)
@@ -107,6 +126,20 @@ def new_enquiry():
             "status": "Enquiry Created"
         }
         Sql.new_enquiry_activity(enquiry)
+
+        formatted_address =  f"{json_data['address_line1']}, {json_data['address_line2']}, {json_data['postcode']}"
+        serializer = URLSafeTimedSerializer(config.SECRET_KEY)
+        token = serializer.dumps(json_data['email'], salt='email-confirm')
+        EmailSqsSender().send_message({
+            "type": "New Enquiry",
+            "enquiry_id": result[0]['id'],
+            "email": json_data['email'],
+            "formatted address": formatted_address,
+            "from_email": get_company_details['trader']['company_response_email'],
+            "name": json_data["full_name"],
+            "title": f"Your enquiry has been sent!",
+            'trader_details': get_company_details.get('trader')
+        })
 
         return result
 

@@ -12,7 +12,7 @@ class AccountApi(object):
         }
 
         resp = requests.get(
-            config.ACCOUNT_API_ENDPOINT + f"/trader/check_trader_bool/{id}",
+            config.ACCOUNT_API_ENDPOINT + f"/trader/check_trader/{id}",
             headers=headers,
         )
 

@@ -1,6 +1,7 @@
 from enquiry_api import db
 from enquiry_api.models import Enquiry, EnquiryActivity
-from sqlalchemy import desc
+from sqlalchemy import desc, and_
+from datetime import datetime, timedelta
 
 class Sql(object):
     # create a Session
@@ -9,6 +10,26 @@ class Sql(object):
 #start of search sql statements
     def get_enquirys(params):
         variable= Sql.session.query(Enquiry).filter_by(**params).all()
+        return variable
+
+    def get_new_enquirys(params):
+        variable= Sql.session.query(Enquiry).filter_by(**params).all()
+        return variable
+
+    def get_new_enquiries(params):
+        # Get the current date and time
+        now = datetime.utcnow()
+        
+        # Calculate the date and time for 7 days ago
+        seven_days_ago = now - timedelta(days=7)
+
+        variable = Sql.session.query(Enquiry).filter(
+            and_(
+                Enquiry.timestamp >= seven_days_ago,
+                *params.items()
+            )
+        ).all()
+
         return variable
 
     def get_enquiry_and_activity(params):

@@ -1,5 +1,4 @@
 from enquiry_api import db
-from datetime import datetime
 import datetime
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
