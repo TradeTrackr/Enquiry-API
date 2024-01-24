@@ -10,13 +10,11 @@ class AccountApi(object):
         headers = {
             "Content-Type": "application/json",
         }
-
         resp = requests.get(
             config.ACCOUNT_API_ENDPOINT + f"/trader/check_trader/{id}",
             headers=headers,
         )
-
-        return json.loads(resp.text)
+        return resp.text
 
     def check_token(self, params):
 

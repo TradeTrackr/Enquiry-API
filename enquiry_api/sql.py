@@ -12,8 +12,8 @@ class Sql(object):
         variable= Sql.session.query(Enquiry).filter_by(**params).all()
         return variable
 
-    def get_new_enquirys(params):
-        variable= Sql.session.query(Enquiry).filter_by(**params).all()
+    def get_enquiry_activity(params):
+        variable= Sql.session.query(EnquiryActivity).filter_by(**params).all()
         return variable
 
     def get_new_enquiries(params):

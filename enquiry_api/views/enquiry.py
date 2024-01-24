@@ -1,3 +1,4 @@
+import json
 from flask import request, Blueprint, jsonify
 import boto3
 from enquiry_api import config
@@ -9,6 +10,11 @@ from enquiry_api.utilities.authentication import token_required
 from enquiry_api.dependencies.sqs import EmailSqsSender
 from itsdangerous import URLSafeTimedSerializer
 
+s3_client_limted = boto3.client('s3',
+    aws_access_key_id= config.aws_access_key_id_LIMITED,
+    aws_secret_access_key= config.aws_secret_access_key_LIMITED,
+    config=Config(signature_version='s3v4'),
+    region_name='eu-west-2')
 
 s3_client = boto3.client('s3',
     aws_access_key_id= config.aws_access_key_id,
@@ -113,35 +119,37 @@ def new_enquiry_activity():
 @enquiry.route("/new_enquiry", methods=['POST'])
 def new_enquiry():
     json_data = request.json
+
     #replace this..
     # do a check that company id is in account_api
     get_company_details = AccountApi().get_company(json_data.get('company_id'))
     if get_company_details != False:
-
+        get_company_details = json.loads(get_company_details)
         results = Sql.new_enquiry(json_data)
-        result = build_output(results)
+        output = build_output(results)
         
         enquiry = {
-            "enuiry_id": result[0]['id'],
+            "enquiry_id": output[0]['id'],
             "status": "Enquiry Created"
         }
         Sql.new_enquiry_activity(enquiry)
 
         formatted_address =  f"{json_data['address_line1']}, {json_data['address_line2']}, {json_data['postcode']}"
-        serializer = URLSafeTimedSerializer(config.SECRET_KEY)
-        token = serializer.dumps(json_data['email'], salt='email-confirm')
+        # serializer = URLSafeTimedSerializer(config.SECRET_KEY)
+        # token = serializer.dumps(json_data['email'], salt='email-confirm')
+
         EmailSqsSender().send_message({
             "type": "New Enquiry",
-            "enquiry_id": result[0]['id'],
+            "enquiry_id": output[0]['id'],
             "email": json_data['email'],
             "formatted address": formatted_address,
-            "from_email": get_company_details['trader']['company_response_email'],
+            "from_email": get_company_details['company_response_email'],
             "name": json_data["full_name"],
             "title": f"Your enquiry has been sent!",
-            'trader_details': get_company_details.get('trader')
+            'trader_details': get_company_details
         })
 
-        return result
+        return output
 
     else:
         #TODO error is returned with a 200 status code
@@ -150,11 +158,10 @@ def new_enquiry():
 @enquiry.route('/generate_presigned_url', methods=['POST'])
 def generate_presigned_url():
     json_data = request.json
-    print(json_data)
     #replace this..
     # do a check that company id is in account_api
     check_company_bool = AccountApi().get_company(json_data.get('company_id'))
-    if check_company_bool == True:
+    if check_company_bool != False:
     
         # replace with company name based on company id..
         bucket_name = config.BUCKET_ID
@@ -172,7 +179,7 @@ def generate_presigned_url():
                                                             file_info
                                                             )
             # Generate a presigned URL for each file
-            presigned_url = s3_client.generate_presigned_url('put_object',
+            presigned_url = s3_client_limted.generate_presigned_url('put_object',
                                                             Params={'Bucket': bucket_name,
                                                                     'Key': key_val},
                                                             ExpiresIn=expiration)
@@ -190,4 +197,4 @@ def build_output(results):
     for key in results:
         output = key.to_dict()
         result_dict.append(output)
-    return jsonify(result_dict)
+    return result_dict

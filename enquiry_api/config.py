@@ -24,6 +24,9 @@ BUCKET_ID = os.environ['BUCKET_ID']
 BUCKET_NAME = os.environ['BUCKET_NAME']
 aws_access_key_id = os.environ['ACCESS_KEY']
 aws_secret_access_key = os.environ['aws_SECRET_KEY']
+aws_access_key_id_LIMITED = os.environ['ACCESS_KEY_LIMITED']
+aws_secret_access_key_LIMITED = os.environ['aws_SECRET_KEY_LIMITED']
+SQS_QUEUE_NAME = os.environ['SQS_QUEUE_NAME']
 
 
 SET_POOL = os.environ['SET_POOL']
