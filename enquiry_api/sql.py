@@ -16,17 +16,18 @@ class Sql(object):
         variable= Sql.session.query(EnquiryActivity).filter_by(**params).all()
         return variable
 
-    def get_new_enquiries(params):
+    def get_new_enquiries(company_id):
         # Get the current date and time
         now = datetime.utcnow()
         
         # Calculate the date and time for 7 days ago
         seven_days_ago = now - timedelta(days=7)
+        print(seven_days_ago)
 
         variable = Sql.session.query(Enquiry).filter(
             and_(
                 Enquiry.timestamp >= seven_days_ago,
-                *params.items()
+                Enquiry.company_id == company_id,
             )
         ).all()
 

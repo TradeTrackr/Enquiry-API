@@ -29,4 +29,4 @@ itsdangerous
 Flask-SQLAlchemy
 Flask-Migrate
 psycopg2==2.8.4
-
+python-jose[cryptography]

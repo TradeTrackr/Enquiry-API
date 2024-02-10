@@ -24,6 +24,7 @@ s3_client = boto3.client('s3',
 
 enquiry = Blueprint('enquiry', __name__)
 
+
 @enquiry.route("/get_enquirys/<company_id>", methods=['GET'])
 @token_required
 def get_enquirys(company_id):
@@ -35,7 +36,7 @@ def get_enquirys(company_id):
 @enquiry.route("/get_new_enquirys/<company_id>", methods=['GET'])
 @token_required
 def get_new_enquirys(company_id):
-    results = Sql.get_new_enquirys({"company_id": company_id})
+    results = Sql.get_new_enquiries(company_id)
 
     return build_output(results)
 
@@ -146,7 +147,8 @@ def new_enquiry():
             "from_email": get_company_details['company_response_email'],
             "name": json_data["full_name"],
             "title": f"Your enquiry has been sent!",
-            'trader_details': get_company_details
+            'trader_details': get_company_details,
+            'template': 'enquiry'
         })
 
         return output

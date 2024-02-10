@@ -2,7 +2,9 @@ from tabnanny import check
 from flask import Flask, request, jsonify
 from functools import wraps
 from enquiry_api.dependencies.account_api import AccountApi
-
+from datetime import datetime
+from enquiry_api import config
+from jose import jwt, JWTError
 
 def token_required(f):
     @wraps(f)
@@ -20,3 +22,13 @@ def token_required(f):
         return f(*args, **kwargs)
 
     return decorated
+
+
+def generate_jwt_magic_link(self, email, url):
+    payload = {
+        "email": email,
+        "exp": datetime.utcnow() + config.MAGIC_LINK_EXPIRE_MINUTES
+    }
+    token = jwt.encode(payload, config.JWT_SECRET_KEY, algorithm=config.ALGORITHM)
+    magic_link = f"{url}/auth?token={token}"
+    return magic_link
