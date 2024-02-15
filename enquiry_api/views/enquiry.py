@@ -143,7 +143,7 @@ def new_enquiry():
             "type": "New Enquiry",
             "enquiry_id": output[0]['id'],
             "email": json_data['email'],
-            "formatted address": formatted_address,
+            "formatted_address": formatted_address,
             "from_email": get_company_details['company_response_email'],
             "name": json_data["full_name"],
             "title": f"Your enquiry has been sent!",

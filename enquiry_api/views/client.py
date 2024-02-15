@@ -8,6 +8,7 @@ client = Blueprint('client', __name__)
 def client_get_enquirys():
 
     json_data = request.json
+    print(json_data)
 
     results = Sql.get_enquirys(json_data)    
 
