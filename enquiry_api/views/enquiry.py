@@ -37,7 +37,6 @@ def get_enquirys(company_id):
 @token_required
 def get_new_enquirys(company_id):
     results = Sql.get_new_enquiries(company_id)
-
     return build_output(results)
 
 

@@ -23,6 +23,7 @@ class Enquiry(db.Model):
     category = Column(String)
     category_detail = Column(String)
     status = Column(String)
+    type = Column(String)
 
     def save(self):  # pragma: no cover
         db.session.add(self)
@@ -45,7 +46,8 @@ class Enquiry(db.Model):
             "address_line3" : self.address_line3,
             "category" : self.category,
             "category_detail" : self.category_detail,
-            "status" : self.status
+            "status" : self.status,
+            "type" : self.type
         }
 
 class EnquiryActivity(db.Model):
